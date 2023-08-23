@@ -46,14 +46,24 @@ class Place(BaseModel, Base):
                 if review.place_id == self.id:
                     review_list.append(review)
             return review_list
+
         @property
         def amenities(self):
+            """
+            Get and Set linked Amenities.
+            """
             amenity_list = []
+
             for amenity in models.storage.all(Amenity).values():
-                if amenity.id == self.amenity_ids:
+                if amenity.id in self.amenity_ids:
                     amenity_list.append(amenity)
+
             return amenity_list
+
         @amenities.setter
         def amenities(self, value):
+            """
+            Adding an Amenity.id to the amenity_ids
+            """
             if type(value) == Amenity:
                 self.amenity_ids.append(value.id)
