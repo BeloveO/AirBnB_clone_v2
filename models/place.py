@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 """ Place Module for HBNB project """
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, Integer, ForeignKey, Float, Table
+from sqlalchemy import Column, String, Integer, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from os import getenv
 import models
 from models.review import Review
+<<<<<<< HEAD
 from models.amenity import Amenity
 
 
@@ -18,6 +19,8 @@ place_amenity = Table("place_amenity", Base.metadata,
                              ForeignKey("amenities.id"),
                              primary_key=True,
                              nullable=False))
+=======
+>>>>>>> parent of 80ecc9f (New engine)
 
 
 class Place(BaseModel, Base):
@@ -37,9 +40,12 @@ class Place(BaseModel, Base):
 
     if getenv("HBNB_TYPE_STORAGE") == "db":
         reviews = relationship("Review", backref="place", cascade="delete")
+<<<<<<< HEAD
         amenities = relationship("Amenity", secondary=place_amenity,
                                 back_populates="places_amenities",
                                 viewonly=False)
+=======
+>>>>>>> parent of 80ecc9f (New engine)
     else:
         @property
         def reviews(self):
@@ -48,6 +54,7 @@ class Place(BaseModel, Base):
                 if review.place_id == self.id:
                     review_list.append(review)
             return review_list
+<<<<<<< HEAD
 
         @property
         def amenities(self):
@@ -71,3 +78,5 @@ class Place(BaseModel, Base):
 
             if type(value) == Amenity:
                 self.amenity_ids.append(value.id)
+=======
+>>>>>>> parent of 80ecc9f (New engine)
