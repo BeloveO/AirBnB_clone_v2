@@ -5,7 +5,7 @@ apt-get -y install nginx
 service nginx start
 mkdir -p /data/web_static/releases/
 mkdir -p /data/web_static/shared/
-echo "Hello World!" >> /data/web_static/releases/test/index.html
+echo "<html>\n\t<head>\n\t</head>\n\t<body>\n\t\tHello World!\n\t</body>\n</html>\n" | tee /data/web_static/releases/test/index.html
 ln -sf /data/web_static/releases/test/ /data/web_static/current
 chown ubuntu:ubuntu /data/
 loc_header="location \/hbnb\_static\/ {"
