@@ -33,7 +33,7 @@ def do_deploy(archive_path):
     """Distributes a .tgz archive through web servers
     """
 
-    if path.exists(archive_path):
+    if os.path.exists(archive_path):
         archive = archive_path.split('/')[1]
         a_path = "/tmp/{}".format(archive)
         folder = archive.split('.')[0]
