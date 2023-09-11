@@ -11,48 +11,66 @@ from fabric.api import *
 import shlex
 
 env.hosts = ["54.208.117.130", "100.26.222.213"]
-env.user = "ubuntu"
 
 
-@runs_once
 def do_pack():
-    """Generates a .tgz archive from the contents
-    of the web_static folder of this repository.
     """
-
-    d = datetime.now()
-    now = d.strftime('%Y%m%d%H%M%S')
-    path = "versions/web_static_{}.tgz".format(now)
-
-    local("mkdir -p versions")
-    local("tar -czvf {} web_static".format(path))
-    return path
+    Create a tar gzipped archive of the directory web_static
+    """
+    dt = datetime.utcnow()
+    file = "versions/web_static_{}{}{}{}{}{}.tgz".format(dt.year,
+                                                         dt.month,
+                                                         dt.day,
+                                                         dt.hour,
+                                                         dt.minute,
+                                                         dt.second)
+    if os.path.isdir("versions") is False:
+        if local("mkdir -p versions").failed is True:
+            return None
+    if local("tar -cvzf {} web_static".format(file)).failed is True:
+        return None
+    return file
 
 
 def do_deploy(archive_path):
-    """Distributes a .tgz archive through web servers
     """
+    Distributes an archive to a web server.
+    """
+    if os.path.isfile(archive_path) is False:
+        return False
+    file = archive_path.split("/")[-1]
+    name = file.split(".")[0]
 
-    if os.path.exists(archive_path):
-        archive = archive_path.split('/')[1]
-        a_path = "/tmp/{}".format(archive)
-        folder = archive.split('.')[0]
-        f_path = "/data/web_static/releases/{}/".format(folder)
-
-        put(archive_path, a_path)
-        run("mkdir -p {}".format(f_path))
-        run("tar -xzf {} -C {}".format(a_path, f_path))
-        run("rm {}".format(a_path))
-        run("mv -f {}web_static/* {}".format(f_path, f_path))
-        run("rm -rf {}web_static".format(f_path))
-        run("rm -rf /data/web_static/current")
-        run("ln -s {} /data/web_static/current".format(f_path))
-
-        return True
-
-    return False
+    if put(archive_path, "/tmp/{}".format(file)).failed is True:
+        return False
+    if run("rm -rf /data/web_static/releases/{}/".
+           format(name)).failed is True:
+        return False
+    if run("mkdir -p /data/web_static/releases/{}/".
+           format(name)).failed is True:
+        return False
+    if run("tar -xzf /tmp/{} -C /data/web_static/releases/{}/".
+           format(file, name)).failed is True:
+        return False
+    if run("rm /tmp/{}".format(file)).failed is True:
+        return False
+    if run("mv /data/web_static/releases/{}/web_static/* "
+           "/data/web_static/releases/{}/".format(name, name)).failed is True:
+        return False
+    if run("rm -rf /data/web_static/releases/{}/web_static".
+           format(name)).failed is True:
+        return False
+    if run("rm -rf /data/web_static/current").failed is True:
+        return False
+    if run("ln -s /data/web_static/releases/{}/ /data/web_static/current".
+           format(name)).failed is True:
+        return False
+    return True
 
 
 def deploy():
-    archive = do_pack()
-    return do_deploy(archive)
+    """Create and distribute an archive to a web server."""
+    file = do_pack()
+    if file is None:
+        return False
+    return do_deploy(file)
