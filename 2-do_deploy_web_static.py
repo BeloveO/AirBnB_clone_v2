@@ -2,7 +2,7 @@
 
 
 """
-Fabric script basd on above that distributes an archive to your web servers
+Fabric script based on above that distributes an archive to your web servers
 """
 import os
 from datetime import datetime
