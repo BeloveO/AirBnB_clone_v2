@@ -11,15 +11,10 @@ from fabric.api import local
 
 def do_pack():
     date = datetime.utcnow()
-    file = "versions/web_static_{}{}{}{}{}{}.tgz".format(date.year,
-                                                         date.month,
-                                                         date.day,
-                                                         date.hour,
-                                                         date.minute,
-                                                         date.second)
-    if os.path.isdir("versions") is False:
-        if local("mkdir -p versions").failed is True:
-            return None
-    if local("tar -cvzf {} web_static".format(file)).failed is True:
+    dt_string = date.strftime("web_static_%Y%m%d%H%m%S")
+    output = "versions/{:}.tgz".format(dt_string)
+    local("mkdir -p versions")
+    result = local("tar -cvzf {:} web_static".format(output))
+    if result.failed:
         return None
-    return file
+    return output
