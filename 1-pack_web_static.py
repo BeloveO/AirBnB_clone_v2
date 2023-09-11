@@ -10,10 +10,11 @@ from fabric.api import local
 
 
 def do_pack():
-    try:
-        d = datetime.now()
-        now = d.strftime('%Y%m%d%H%M%S')
-        local("mkdir -p versions")
-        local("tar -czvf versions/web_static_{}.tgz web_static".format(now))
-    except FileNotFoundError:
+    now = datetime.now()
+    dt_string = now.strftime("web_static_%Y%m%d%H%m%S")
+    output_file = "versions/{:}.tgz".format(dt_string)
+    local("mkdir -p versions")
+    result = local("tar -cvzf {:} web_static".format(output_file))
+    if result.failed:
         return None
+    return output_file
