@@ -4,7 +4,7 @@
 """
 Fabric script that generates .tgz archive from web_static folder contents
 """
-import os
+import os.path
 from datetime import datetime
 from fabric.api import local
 
