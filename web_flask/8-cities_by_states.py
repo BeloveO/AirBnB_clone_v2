@@ -10,13 +10,18 @@ from models.state import State
 app = Flask(__name__)
 
 
-@app.route('/states_list', strict_slashes=False)
-def state_list():
+@app.route('/cities_by_states', strict_slashes=False)
+def city_state():
     """
-    Taking the /states_list function
+    Taking the /cities_by_states function
     """
     states = storage.all(State).values()
-    return render_template('7-states_list.html', states=states)
+    cities = list()
+    for state in states:
+        for city in state.cities:
+            cities.append(city)
+    return render_template('8-cities_by_states.html', states=states,
+                           state_cities=cities)
 
 
 @app.teardown_appcontext
